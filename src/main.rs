@@ -4,6 +4,7 @@ use std::process;
 use std::error::Error;
 
 use logwatch_rs::parser::{FailedLogin,parse_line};
+use logwatch_rs::detector::detector;
 fn main() {
     let args: Vec<String> = env::args().collect();
     
@@ -12,11 +13,9 @@ fn main() {
         process::exit(1);
     });
     if let Err(e) = run(file_path) {
-        println!("Application error: {e}");
+        eprintln!("Application error: {e}");
         process::exit(1);
     }
-    
-    
     
 }
 fn parse_config(args: &[String]) -> Result<&str, &'static str> {
@@ -27,11 +26,13 @@ fn parse_config(args: &[String]) -> Result<&str, &'static str> {
 }
 fn run(path_to_file: &str) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(path_to_file)?;
+    // DEBUG
     println!("Inside run");
     let events: Vec<FailedLogin> = contents.lines().filter_map(parse_line).collect();
         for event in &events {
             println!("{} failed login: user={} ip={}", event.timestamp, event.user, event.ip);
 
         }
+    let alerts = detector(events, 3, 60);
     Ok(())
 }

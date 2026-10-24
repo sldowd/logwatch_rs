@@ -12,6 +12,7 @@ pub struct FailedLogin {
 /// `Oct 20 10:15:01 host sshd[1234]: Failed password for root from 203.0.113.5 port 22 ssh2`
 /// Returns None for any line that is not a failed password attempt.
 pub fn parse_line(line: &str) -> Option<FailedLogin> {
+
     if line.contains("Failed password") && line.contains("sshd") {
         let tokens: Vec<&str> = line.split_whitespace().collect();
         // find position of anchor words
@@ -26,6 +27,7 @@ pub fn parse_line(line: &str) -> Option<FailedLogin> {
         let ip: IpAddr = tokens.get(from_pos + 1)?.parse().ok()?;
         let ts = format!("2026 {} {} {}", tokens[0], tokens[1], tokens[2]);
         let timestamp = NaiveDateTime::parse_from_str(&ts, "%Y %b %d %H:%M:%S").ok()?;
+        
         Some(FailedLogin { timestamp, user: user.to_string(), ip })
     } else {
         None
