@@ -2,6 +2,7 @@ use std::fs;
 use std::env;
 use std::process;
 use std::error::Error;
+use chrono::Duration;
 
 use logwatch_rs::parser::{FailedLogin,parse_line};
 use logwatch_rs::detector::detector;
@@ -33,6 +34,6 @@ fn run(path_to_file: &str) -> Result<(), Box<dyn Error>> {
             println!("{} failed login: user={} ip={}", event.timestamp, event.user, event.ip);
 
         }
-    let alerts = detector(events, 3, 60);
+    let alerts = detector(events, 3, Duration::seconds(60));
     Ok(())
 }
