@@ -1,14 +1,14 @@
-use std::fs;
-use std::env;
-use std::process;
-use std::error::Error;
 use chrono::Duration;
+use std::env;
+use std::error::Error;
+use std::fs;
+use std::process;
 
-use logwatch_rs::parser::{FailedLogin,parse_line};
 use logwatch_rs::detector::detector;
+use logwatch_rs::parser::{FailedLogin, parse_line};
 fn main() {
     let args: Vec<String> = env::args().collect();
-    
+
     let file_path = parse_config(&args).unwrap_or_else(|err| {
         println!("Problem parsing args:{err}");
         process::exit(1);
@@ -17,7 +17,6 @@ fn main() {
         eprintln!("Application error: {e}");
         process::exit(1);
     }
-    
 }
 fn parse_config(args: &[String]) -> Result<&str, &'static str> {
     if args.len() < 2 {
@@ -27,13 +26,7 @@ fn parse_config(args: &[String]) -> Result<&str, &'static str> {
 }
 fn run(path_to_file: &str) -> Result<(), Box<dyn Error>> {
     let contents = fs::read_to_string(path_to_file)?;
-    // DEBUG
-    println!("Inside run");
     let events: Vec<FailedLogin> = contents.lines().filter_map(parse_line).collect();
-        for event in &events {
-            println!("{} failed login: user={} ip={}", event.timestamp, event.user, event.ip);
-
-        }
-    let alerts = detector(events, 3, Duration::seconds(60));
+    let _alerts = detector(events, 3, Duration::seconds(60));
     Ok(())
 }

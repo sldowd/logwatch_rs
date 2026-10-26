@@ -61,7 +61,6 @@ mod tests {
 
     #[test]
     fn rejects_malformed_ip() {
-        // TODO: a bad IP returns None instead of panicking
         let line = "Oct 22 14:12:15 web01 sshd[2301]: Failed password for ubuntu from 203.0.113.999 port 33102 ssh2";
         assert_eq!(parse_line(line), None);
     }
